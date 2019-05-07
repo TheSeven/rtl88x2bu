@@ -107,6 +107,35 @@ static s32 update_txdesc(struct xmit_frame *pxmitframe, u8 *pmem, s32 sz, u8 bag
 		SET_TX_DESC_HW_SSN_SEL_8822B(ptxdesc, 0);
 	} else
 		SET_TX_DESC_SW_SEQ_8822B(ptxdesc, pattrib->seqnum);
+	/* injected frame */
+	if (pattrib->inject == 0xa5) {
+		SET_TX_DESC_RTY_LMT_EN_8822B(ptxdesc, 1);
+		if (pattrib->retry_ctrl == _TRUE) {
+			SET_TX_DESC_RTS_DATA_RTY_LMT_8822B(ptxdesc, 6);
+		} else {
+			SET_TX_DESC_RTS_DATA_RTY_LMT_8822B(ptxdesc, 0);
+		}
+		if (pattrib->sgi == _TRUE) {
+			SET_TX_DESC_DATA_SHORT_8822B(ptxdesc, 1);
+		} else {
+			SET_TX_DESC_DATA_SHORT_8822B(ptxdesc, 0);
+		}
+
+		SET_TX_DESC_DISDATAFB_8822B(ptxdesc, 1); // svpcom: ?
+		SET_TX_DESC_USE_RATE_8822B(ptxdesc, 1);
+		SET_TX_DESC_DATARATE_8822B(ptxdesc, MRateToHwRate(pattrib->rate));
+
+		if (pattrib->ldpc)
+			SET_TX_DESC_DATA_LDPC_8822B(ptxdesc, 1);
+		else
+			SET_TX_DESC_DATA_LDPC_8822B(ptxdesc, 0);
+		SET_TX_DESC_DATA_STBC_8822B(ptxdesc, pattrib->stbc & 3);
+		//SET_TX_DESC_GF_8822B(ptxdesc, 1); // no MCS rates if sets, GreenField?
+		//SET_TX_DESC_LSIG_TXOP_EN_8822B(ptxdesc, 1);
+		//SET_TX_DESC_HTC_8822B(ptxdesc, 1);
+		//SET_TX_DESC_NO_ACM_8822B(ptxdesc, 1);
+		//SET_TX_DESC_DATA_BW_8822B(ptxdesc, pattrib->bwmode); // 0 - 20 MHz, 1 - 40 MHz, 2 - 80 MHz
+	}
 
 	if ((pxmitframe->frame_tag & 0x0f) == DATA_FRAMETAG) {
 		/* RTW_INFO("pxmitframe->frame_tag == DATA_FRAMETAG\n");	*/

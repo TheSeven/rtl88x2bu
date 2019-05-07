@@ -33,6 +33,8 @@
 	#endif
 #else /* PLATFORM_LINUX /PLATFORM_BSD */
 
+#include <linux/interrupt.h>
+
 	#ifdef CONFIG_SINGLE_RECV_BUF
 		#define NR_RECVBUFF (1)
 	#else
@@ -236,7 +238,11 @@ struct rx_pkt_attrib	{
 /* #define REORDER_ENTRY_NUM	128 */
 #define REORDER_WAIT_TIME	(50) /* (ms) */
 
-#define RECVBUFF_ALIGN_SZ 8
+#if defined(CONFIG_PLATFORM_RTK390X) && defined(CONFIG_USB_HCI)
+	#define RECVBUFF_ALIGN_SZ 32
+#else
+	#define RECVBUFF_ALIGN_SZ 8
+#endif
 
 #ifdef CONFIG_TRX_BD_ARCH
 	#define RX_WIFI_INFO_SIZE	24

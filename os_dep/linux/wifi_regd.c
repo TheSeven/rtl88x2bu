@@ -43,13 +43,11 @@ static struct country_code_to_enum_rd allCountries[] = {
 
 /* 2G chan 12 - chan 13, PASSIV SCAN */
 #define RTW_2GHZ_CH12_13	\
-	REG_RULE(2467-10, 2472+10, 40, 0, 20,	\
-		 NL80211_RRF_PASSIVE_SCAN)
+	REG_RULE(2467-10, 2472+10, 40, 0, 20, 0)
 
 /* 2G chan 14, PASSIVS SCAN, NO OFDM (B only) */
 #define RTW_2GHZ_CH14	\
-	REG_RULE(2484-10, 2484+10, 40, 0, 20,	\
-		 NL80211_RRF_PASSIVE_SCAN | NL80211_RRF_NO_OFDM)
+	REG_RULE(2484-10, 2484+10, 40, 0, 20, 0)
 
 /* 5G chan 36 - chan 64 */
 #define RTW_5GHZ_5150_5350	\
@@ -258,6 +256,7 @@ static void _rtw_reg_apply_active_scan_flags(struct wiphy *wiphy,
  */
 static void _rtw_reg_apply_radar_flags(struct wiphy *wiphy)
 {
+#ifndef CONFIG_DISABLE_REGD_C
 	struct ieee80211_supported_band *sband;
 	struct ieee80211_channel *ch;
 	unsigned int i;
@@ -304,6 +303,7 @@ static void _rtw_reg_apply_radar_flags(struct wiphy *wiphy)
 				     IEEE80211_CHAN_PASSIVE_SCAN;
 #endif
 	}
+#endif // CONFIG_DISABLE_REGD_C
 }
 
 static void _rtw_reg_apply_flags(struct wiphy *wiphy)
@@ -529,6 +529,7 @@ static struct country_code_to_enum_rd *_rtw_regd_find_country(u16 countrycode)
 
 int rtw_regd_init(_adapter *padapter)
 {
+#ifndef CONFIG_DISABLE_REGD_C
 	struct wiphy *wiphy = padapter->rtw_wdev->wiphy;
 
 #if 0
@@ -547,7 +548,7 @@ int rtw_regd_init(_adapter *padapter)
 #endif
 
 	_rtw_regd_init_wiphy(NULL, wiphy);
-
+#endif
 	return 0;
 }
 #endif /* CONFIG_IOCTL_CFG80211 */

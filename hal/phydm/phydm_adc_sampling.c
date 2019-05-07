@@ -57,23 +57,22 @@ phydm_la_buffer_allocate(
 	void		*adapter = dm->adapter;
 #endif
 	struct rt_adcsmp_string	*adc_smp_buf = &adc_smp->adc_smp_buf;
-	boolean	ret = true;
+	boolean	ret = false;
 
 	pr_debug("[LA mode BufferAllocate]\n");
 
 	if (adc_smp_buf->length == 0) {
 #if (DM_ODM_SUPPORT_TYPE & ODM_WIN)
-		if (PlatformAllocateMemoryWithZero(adapter, (void **)&adc_smp_buf->octet, adc_smp_buf->buffer_size) != RT_STATUS_SUCCESS)
-			ret = false;
+		if (PlatformAllocateMemoryWithZero(adapter, (void **)&adc_smp_buf->octet, adc_smp_buf->buffer_size) != RT_STATUS_SUCCESS) {
 #else
 		odm_allocate_memory(dm, (void **)&adc_smp_buf->octet, adc_smp_buf->buffer_size);
-
-		if (!adc_smp_buf->octet)
-			ret = false;
+		if (!adc_smp_buf->octet) {
 #endif
-
-		if (ret)
+			ret = false;
+		} else {
 			adc_smp_buf->length = adc_smp_buf->buffer_size;
+			ret = true;
+		}
 	}
 
 	return ret;

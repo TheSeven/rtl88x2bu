@@ -118,7 +118,6 @@ struct phydm_dig_struct {
 	u8		pause_dig_value[PHYDM_PAUSE_MAX_NUM];
 	enum dig_goupcheck_level		dig_go_up_check_level;
 	u8		aaa_default;
-	u8		a0a_default;
 	u16		fa_th[3];
 #if (RTL8822B_SUPPORT == 1 || RTL8197F_SUPPORT == 1 || RTL8821C_SUPPORT == 1)
 	u8		rf_gain_idx;

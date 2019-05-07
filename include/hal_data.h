@@ -476,6 +476,8 @@ typedef struct hal_com_data {
 	u8	txpwr_limit_from_file:1;
 	u8	rf_power_tracking_type;
 
+	u8	CurrentTxPwrIdx;
+
 	/* Read/write are allow for following hardware information variables	 */
 	u8	crystal_cap;
 
@@ -1022,18 +1024,29 @@ int rtw_halmac_deinit_adapter(struct dvobj_priv *);
 #define REG_APK	rAPK
 #define REG_ANTSEL_SW_JAGUAR	r_ANTSEL_SW_Jaguar
 
-
-
 #define rf_welut_jaguar	RF_WeLut_Jaguar
 #define rf_mode_table_addr	RF_ModeTableAddr
 #define rf_mode_table_data0	RF_ModeTableData0
 #define rf_mode_table_data1	RF_ModeTableData1
 
-
-
-
-
-
 #define RX_SMOOTH_FACTOR	Rx_Smooth_Factor
+
+#if defined(CONFIG_RESUME_IN_WORKQUEUE) || defined(CONFIG_HAS_EARLYSUSPEND)
+int rtw_resume_process(_adapter *padapter);
+#endif
+#ifdef CONFIG_ANDROID_POWER
+#if defined(CONFIG_USB_HCI) || defined(CONFIG_SDIO_HCI) || defined(CONFIG_GSPI_HCI)
+int rtw_resume_process(PADAPTER padapter);
+#endif
+#endif
+#ifdef CONFIG_AUTOSUSPEND
+void autosuspend_enter(_adapter* padapter);
+int autoresume_enter(_adapter* padapter);
+#endif
+
+#ifdef SUPPORT_HW_RFOFF_DETECTED
+int rtw_hw_suspend(_adapter *padapter );
+int rtw_hw_resume(_adapter *padapter);
+#endif
 
 #endif /* __HAL_DATA_H__ */

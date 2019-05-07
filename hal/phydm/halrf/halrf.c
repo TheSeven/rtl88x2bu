@@ -142,18 +142,19 @@ void phydm_get_iqk_cfir(
 		ch = 2;
 	else
 		ch = 0;
-	odm_set_bb_reg(dm, 0x1b00, MASKDWORD, 0xf8000008 | path << 1);
-	if (idx == 0)
-		odm_set_bb_reg(dm, 0x1b0c, BIT(13) | BIT(12), 0x3);
-	else
-		odm_set_bb_reg(dm, 0x1b0c, BIT(13) | BIT(12), 0x1);
-	odm_set_bb_reg(dm, 0x1bd4, BIT(20) | BIT(19) | BIT(18) | BIT(17) | BIT(16), 0x10);
-	for (i = 0; i < 8; i++) {
-		odm_set_bb_reg(dm, 0x1bd8, MASKDWORD, 0xe0000001 + (i * 4));
-		tmp = odm_get_bb_reg(dm, 0x1bfc, MASKDWORD);
-		iqk_info->iqk_cfir_real[ch][path][idx][i] = (tmp & 0x0fff0000) >> 16;
-		iqk_info->iqk_cfir_imag[ch][path][idx][i] = tmp & 0xfff;
-	}
+
+		odm_set_bb_reg(dm, 0x1b00, MASKDWORD, 0xf8000008 | path << 1);
+		if (idx == 0)
+			odm_set_bb_reg(dm, 0x1b0c, BIT(13) | BIT(12), 0x3);
+		else
+			odm_set_bb_reg(dm, 0x1b0c, BIT(13) | BIT(12), 0x1);
+		odm_set_bb_reg(dm, 0x1bd4, BIT(20) | BIT(19) | BIT(18) | BIT(17) | BIT(16), 0x10);
+		for (i = 0; i < 8; i++) {
+			odm_set_bb_reg(dm, 0x1bd8, MASKDWORD, 0xe0000001 + (i * 4));
+			tmp = odm_get_bb_reg(dm, 0x1bfc, MASKDWORD);
+			iqk_info->iqk_cfir_real[ch][path][idx][i] = (tmp & 0x0fff0000) >> 16;
+			iqk_info->iqk_cfir_imag[ch][path][idx][i] = tmp & 0xfff;
+		}
 	odm_set_bb_reg(dm, 0x1bd8, MASKDWORD, 0x0);
 	odm_set_bb_reg(dm, 0x1b0c, BIT(13) | BIT(12), 0x0);
 }
@@ -853,14 +854,12 @@ halrf_segment_iqk_trigger(
 		odm_acquire_spin_lock(dm, RT_IQK_SPINLOCK);
 		dm->rf_calibrate_info.is_iqk_in_progress = false;
 		odm_release_spin_lock(dm, RT_IQK_SPINLOCK);
-	} else
+	} else {
 		PHYDM_DBG(dm, ODM_COMP_CALIBRATION, "== Return the IQK CMD, because RFKs in Progress ==\n");
+	}
 }
 
-
-
 #endif
-
 
 
 u8 halrf_match_iqk_version(void	*dm_void)
@@ -1421,10 +1420,10 @@ halrf_iqk_trigger(
 		odm_acquire_spin_lock(dm, RT_IQK_SPINLOCK);
 		dm->rf_calibrate_info.is_iqk_in_progress = false;
 		odm_release_spin_lock(dm, RT_IQK_SPINLOCK);
-	} else
+	} else {
 		PHYDM_DBG(dm, ODM_COMP_CALIBRATION, "== Return the IQK CMD, because RFKs in Progress ==\n");
+	}
 }
-
 
 
 void
@@ -1547,8 +1546,9 @@ halrf_lck_trigger(
 		odm_acquire_spin_lock(dm, RT_IQK_SPINLOCK);
 		dm->rf_calibrate_info.is_lck_in_progress = false;
 		odm_release_spin_lock(dm, RT_IQK_SPINLOCK);		
-	}else
+	} else {
 		PHYDM_DBG(dm, ODM_COMP_CALIBRATION, "== Return the LCK CMD, because RFK is in Progress ==\n");
+	}
 }
 
 void

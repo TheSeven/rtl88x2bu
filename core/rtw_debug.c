@@ -42,7 +42,7 @@ const char *rtw_log_level_str[] = {
 void dump_drv_version(void *sel)
 {
 	RTW_PRINT_SEL(sel, "%s %s\n", DRV_NAME, DRIVERVERSION);
-	RTW_PRINT_SEL(sel, "build time: %s %s\n", __DATE__, __TIME__);
+//	RTW_PRINT_SEL(sel, "build time: %s %s\n", __DATE__, __TIME__);
 }
 
 void dump_drv_cfg(void *sel)
@@ -4355,6 +4355,7 @@ ssize_t proc_set_wowlan_gpio_info(struct file *file, const char __user *buffer,
 			rtw_hal_set_output_gpio(padapter, WAKEUP_GPIO_IDX, 0);
 		#else
 		val8 = (pwrpriv->is_high_active == 0) ? 1 : 0;
+		rtw_hal_switch_gpio_wl_ctrl(padapter, WAKEUP_GPIO_IDX, _TRUE);
 		rtw_hal_set_output_gpio(padapter, WAKEUP_GPIO_IDX, val8);
 		#endif
 		rtw_ps_deny_cancel(padapter, PS_DENY_IOCTL);
@@ -6070,6 +6071,9 @@ ssize_t proc_set_lck(struct file *file, const char __user *buffer, size_t count,
 #endif /* CONFIG_DBG_RF_CAL */
 
 #endif /* CONFIG_PROC_DEBUG */
+
+#ifdef CONFIG_RTW_DEBUG
+
 #define RTW_BUFDUMP_BSIZE		16
 #if 1
 inline void RTW_BUF_DUMP_SEL(uint _loglevel, void *sel, u8 *_titlestring,
@@ -6187,3 +6191,10 @@ inline void RTW_BUF_DUMP_SEL(uint _loglevel, void *sel, u8 *_titlestring,
 }
 
 #endif
+#else
+inline void RTW_BUF_DUMP_SEL(uint _loglevel, void *sel, u8 *_titlestring,
+					bool _idx_show, const u8 *_hexdata, int _hexdatalen)
+{
+}
+#endif //#ifdef CONFIG_RTW_DEBUG
+

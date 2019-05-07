@@ -138,7 +138,6 @@
 		#define CONFIG_FW_C2H_PKT
 	#endif /* CONFIG_FW_C2H_PKT */
 	#define RTW_TX_PA_BIAS	/* Adjust TX PA Bias from eFuse */
-	#define CONFIG_DFS	/* Enable 5G band 2&3 channel */
 
 	#ifdef CONFIG_WOWLAN
 		#define CONFIG_GTK_OL
@@ -160,7 +159,6 @@
 	 * Beamforming related definition
 	 */
 	/* Beamforming mechanism is on driver not phydm, always disable it */
-	#define BEAMFORMING_SUPPORT				0
 	/* Only support new beamforming mechanism */
 	#ifdef CONFIG_BEAMFORMING
 		#define RTW_BEAMFORMING_VERSION_2
@@ -197,7 +195,7 @@
 		/* Supported since fw v22.1 */
 		#define RTW_PER_CMD_SUPPORT_FW
 	#endif /* RTW_PER_CMD_SUPPORT_FW */
-
+	
 	#ifndef CONFIG_DYNAMIC_SOML
 		#define CONFIG_DYNAMIC_SOML
 	#endif /* CONFIG_DYNAMIC_SOML */

@@ -210,7 +210,6 @@ phydm_cckpd_new_cs_ratio(
 	u8	pd_th = 0, cs_ration = 0, cs_2r_offset = 0;
 	u8	igi_curr = dig_t->cur_ig_value;
 	u8	en_2rcca;
-	boolean is_update = true;
 
 	PHYDM_DBG(dm, DBG_CCKPD, "%s ======>\n", __func__);
 
@@ -240,7 +239,6 @@ phydm_cckpd_new_cs_ratio(
 				cs_ration = dig_t->aaa_default;
 				pd_th = 0x3;
 			} else {
-				is_update = false;
 				cs_ration = cckpd_t->cck_cca_th_aaa;
 				pd_th = cckpd_t->cur_cck_cca_thres;
 			}
@@ -255,7 +253,6 @@ phydm_cckpd_new_cs_ratio(
 			cs_ration = dig_t->aaa_default;
 			pd_th = 0x3;
 		} else {
-			is_update = false;
 			cs_ration = cckpd_t->cck_cca_th_aaa;
 			pd_th = cckpd_t->cur_cck_cca_thres;
 		}
@@ -264,15 +261,15 @@ phydm_cckpd_new_cs_ratio(
 	if (en_2rcca)
 		cs_ration = (cs_ration >= cs_2r_offset) ? (cs_ration - cs_2r_offset) : 0;
 
+	cckpd_t->cur_cck_cca_thres = pd_th;
+	cckpd_t->cck_cca_th_aaa = cs_ration;
+
 	PHYDM_DBG(dm, DBG_CCKPD, 
 	"[New] cs_ratio=0x%x, pd_th=0x%x\n", cs_ration, pd_th);
 
-	if (is_update) {
-		cckpd_t->cur_cck_cca_thres = pd_th;
-		cckpd_t->cck_cca_th_aaa = cs_ration;
-		odm_set_bb_reg(dm, 0xa08, 0xf0000, pd_th);
-		odm_set_bb_reg(dm, 0xaa8, 0x1f0000, cs_ration);
-	}
+	odm_set_bb_reg(dm, 0xa08, 0xf0000, pd_th);
+	odm_set_bb_reg(dm, 0xaa8, 0x1f0000, cs_ration);
+
 	/*phydm_write_cck_cca_th_new_cs_ratio(dm, pd_th, cs_ration);*/
 }
 
@@ -454,16 +451,9 @@ phydm_cck_pd_init(
 	
 	cckpd_t->pause_bitmap = 0;
 
-	if (dm->support_ic_type & EXTEND_CCK_CCATH_AAA_IC) {
+	if (dm->support_ic_type & EXTEND_CCK_CCATH_AAA_IC)
 		dig_t->aaa_default = odm_read_1byte(dm, 0xaaa) & 0x1f;
-		dig_t->a0a_default = (u8)odm_get_bb_reg(dm, R_0xa08, 0xff0000);
-		cckpd_t->cck_cca_th_aaa = dig_t->aaa_default;
-		cckpd_t->cur_cck_cca_thres = dig_t->a0a_default;
-	} else {
-		dig_t->a0a_default = (u8)odm_get_bb_reg(dm, R_0xa08, 0xff0000);
-		cckpd_t->cur_cck_cca_thres = dig_t->a0a_default;
-	}
-
+	
 	odm_memory_set(dm, cckpd_t->pause_cckpd_value, 0, PHYDM_PAUSE_MAX_NUM);
 #endif
 }
